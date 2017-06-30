@@ -23,6 +23,7 @@ $(function() {
 			model.init();
 			view1.init();
 			view2.init();
+			view3.init();
 		},
 		getAllCats: function() {
 			return model.data;
@@ -35,6 +36,12 @@ $(function() {
 		},
 		getCat: function() {
 			return model.data[model.id];
+		},
+		update: function(name, pic, count) {
+			cat = octopus.getCat();
+			cat.catName = name;
+			cat.catPic = pic;
+			cat.clickCount = count;
 		}
 	};
 	
@@ -47,6 +54,7 @@ $(function() {
 				elem.addEventListener('click', function() {
 					octopus.setID(cat.id);
 					view2.render();
+					view3.init();
 				});
 				/* elem.addEventListener('click', (function(cc) {
 					return function() {
@@ -67,6 +75,7 @@ $(function() {
 			img.addEventListener('click', function() {
 				octopus.clicked();
 				view2.render();
+				view3.init();
 			});
 			view2.render();
 		},
@@ -82,7 +91,39 @@ $(function() {
 		}
 	};
 	
+	var view3 = {
+		init: function() {
+			var adm = document.getElementById("adm");
+			adm.addEventListener('click', function() {
+				view3.render();
+			});
+			var catForm = document.getElementById("cat-form");
+			catForm.style.visibility = 'hidden';
+		},
+		render: function() {
+			var catForm = document.getElementById("cat-form");
+			catForm.style.visibility = 'visible';
+			var name = document.getElementById("name");
+			var pic = document.getElementById("picture");
+			var count = document.getElementById("click");
+			var cat = octopus.getCat();
+			name.value = cat.catName;
+			pic.value = cat.catPic;
+			count.value = cat.clickCount;
+			var submit = document.getElementById("submit");
+			submit.addEventListener('click', function() {
+				octopus.update(name.value, pic.value, count.value);
+				view2.render();
+			});
+			var cancel = document.getElementById("cancel");
+			cancel.addEventListener('click', function() {
+				view3.init();
+			});
+		}
+	};
+	
 	octopus.init();
+	
 });
 
 
