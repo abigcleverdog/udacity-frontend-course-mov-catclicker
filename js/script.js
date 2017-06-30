@@ -1,53 +1,88 @@
+$(function() {
+	var model = {
+		id: 0,
+		data: [],
+		init: function() {
+			var catsNum = 5;
+			var arr = [];
+			for (var i=1; i<=catsNum; i++) {
+				var cat = {
+					id: i-1,
+					clickCount: 0,
+					catName: 'Cat ' + i,
+					catPic: 'cat' + i + '.jpg'
+				};
+				arr.push(cat);
+			}
+			model.data = arr;
+		}
+	};
 
-var cats = [1,2,3,4,5];
-var counts = new Array(cats.length).fill(0);
-
-$('#cat-pic').on('click', function(){
-	var ind = parseInt($('#cat-title').text().split(' ')[1])-1;
-	counts[ind]++;
-	$('#count').html(counts[ind]);
-});
-
-for (var i=1; i<=cats.length; i++) {
-	var catName = 'Cat ' + i;
-	var cnt = counts[i-1];
-	var cat = 'cat'+i+'.jpg';
+	var octopus = {
+		init: function() {
+			model.init();
+			view1.init();
+			view2.init();
+		},
+		getAllCats: function() {
+			return model.data;
+		},
+		setID: function(id) {
+			model.id = id;
+		},
+		clicked: function() {
+			++model.data[model.id].clickCount;
+		},
+		getCat: function() {
+			return model.data[model.id];
+		}
+	};
 	
-	var elem = document.createElement('li');
-	elem.textContent = catName;
-	
-	elem.addEventListener('click', (function(c1, c2, c3) {
-		return function() {
-			$('#cat-title').html(c1);
-			$('#count').html(counts[c3-1]);
-			$('#cat-pic').attr('src', c2);};
-	})(catName, cat, i));
-	/* elem.addEventListener('click', 
-	(function(catNameC, cntC, catC) {
-		return function() {
-			$('#cat-title').textContent = catNameC;
+	var view1 = {
+		init: function() {
+			var catList = document.getElementById("cat-list");
+			octopus.getAllCats().forEach(function(cat){
+				var elem = document.createElement('li');
+				elem.textContent = cat.catName;				
+				elem.addEventListener('click', function() {
+					octopus.setID(cat.id);
+					view2.render();
+				});
+				/* elem.addEventListener('click', (function(cc) {
+					return function() {
+						console.log(cc);
+						octopus.setID(cc.id);
+						console.log(model.id);
+						};
+				})(cat)); */
+				
+				 catList.appendChild(elem);
+			});			
+        }
+	};
+
+	var view2 = {
+		init: function() {
+			var img = document.getElementById("cat-pic");
+			img.addEventListener('click', function() {
+				octopus.clicked();
+				view2.render();
+			});
+			view2.render();
+		},
+		render: function(cat) {
+			var title = document.getElementById("cat-title");
+			var img = document.getElementById("cat-pic");
+			var count = document.getElementById("count");
+			var cat = octopus.getCat();
+			title.textContent = cat.catName;
+			img.src = cat.catPic;			
 			
-		};
-	})(catName, cnt, cat)); */
+			count.textContent = cat.clickCount;
+		}
+	};
 	
-	$('#cat-list').append(elem);
-}
-
-/* $('#pic1').prepend('<span>'+cat1+'</span>');
-$('#pic2').prepend('<span>'+cat2+'</span>');
-
-var count1 = 0;
-var count2 = 0;
-
-$('#pic1').append('<span id="cat1-cnt">'+count1+'</span>');
-$('#pic2').append('<span id="cat2-cnt">'+count2+'</span>');
-
-$('#pic1').click(function(e) {
-	count1++;
-	$('#cat1-cnt').text(count1);
+	octopus.init();
 });
 
-$('#pic2').click(function(e) {
-	count2++;
-	$('#cat2-cnt').text(count2);
-}); */
+
